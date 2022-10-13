@@ -34,3 +34,4 @@
 
 # inofre database.yml files
 /config/database.yml
+/config/credentials/production.key
