@@ -14,7 +14,7 @@ set :user, 'jhawks'
 set :rails_env, 'production'
 set :deploy_to, '/var/www/deployment-demo'
 
-server "#{fetch(:user)}/#{fetch(:ip)}", roles: %w{web app db}
+server "#{fetch(:user)}@#{fetch(:ip)}", roles: %w{web app db}
 
 # role-based syntax
 # ==================
