@@ -31,3 +31,6 @@
 /config/master.key
 
 /config/database.yml
+
+# inofre database.yml files
+/config/database.yml
