@@ -58,7 +58,7 @@ namespace :puma do
   task :start do
     on roles(fetch(:puma_role)) do
       within current_path do
-        execute :bundle, :exec, :puma, "-C #{release_path}/config/puma.rb"
+        execute :bundle, :exec, :puma, "-C #{release_path}/config/puma.rb -d"
       end
     end
   end
