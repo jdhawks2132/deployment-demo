@@ -41,31 +41,24 @@ set :puma_role, :web
 
 # Restart Puma
 namespace :puma do
-  desc 'Restart application'
-  task :restart do
-    invoke 'puma:stop'
-    invoke 'puma:start'
-  end
-
-  desc 'Stop application'
-  task :stop do
-    on roles(fetch(:puma_role)) do
-      execute "if [ -e #{fetch(:puma_pid)} ] && kill -0 `cat #{fetch(:puma_pid)}`> /dev/null 2>&1; then kill -QUIT `cat #{fetch(:puma_pid)}`; fi"
-    end
-  end
-
-  desc 'Start application'
-  task :start do
+  desc 'Create systemd unit for Puma'
+  task :systemd do
     on roles(fetch(:puma_role)) do
       within current_path do
-        execute :bundle, :exec, :puma, "-C #{release_path}/config/puma.rb", "> #{fetch(:puma_access_log)} 2>&1 &"
+        # Generate systemd unit file
+        execute :bundle, :exec, :puma, '-C', "#{fetch(:deploy_to)}/current/config/puma.rb", '--generate-systemd-service', "puma_#{fetch(:application)}", '--directory', "#{fetch(:deploy_to)}/current", '--environment', fetch(:rails_env), '--user', fetch(:deploy_user), '--group', fetch(:deploy_user), '--log-dir', "#{shared_path}/log"
+
+        # Enable and start the service
+        execute :sudo, :systemctl, :enable, "puma_#{fetch(:application)}.service"
+        execute :sudo, :systemctl, :daemon-reload
+        execute :sudo, :systemctl, :start, "puma_#{fetch(:application)}.service"
       end
     end
   end
 end
 
-after 'deploy:publishing', 'puma:restart'
-
+# Restart Puma using systemd
+after 'deploy:publishing', 'puma:systemd'
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
