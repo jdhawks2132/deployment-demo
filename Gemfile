@@ -72,3 +72,5 @@ end
 
 
 gem "capistrano-rvm", "~> 0.1.2"
+
+gem "capistrano-puma", "~> 0.2.3"
