@@ -47,7 +47,7 @@ namespace :puma do
       within current_path do
         # Enable and restart the service
         execute :sudo, :systemctl, :enable, 'puma.service'
-        execute :sudo, :systemctl, :daemon - reload
+        execute :sudo, :systemctl, 'daemon-reload'
         execute :sudo, :systemctl, :restart, 'puma.service' # Changed from :start to :restart
       end
     end
