@@ -41,22 +41,18 @@ set :puma_role, :web
 
 # Restart Puma
 namespace :puma do
-  desc 'Create systemd unit for Puma'
+  desc 'Restart Puma service'
   task :systemd do
     on roles(fetch(:puma_role)) do
       within current_path do
-        # Generate systemd unit file
-        execute :bundle, :exec, :puma, '-C', "#{fetch(:deploy_to)}/current/config/puma.rb", '--generate-systemd-service', "puma_#{fetch(:application)}", '--directory', "#{fetch(:deploy_to)}/current", '--environment', fetch(:rails_env), '--user', fetch(:deploy_user), '--group', fetch(:deploy_user), '--log-dir', "#{shared_path}/log"
-
-        # Enable and start the service
-        execute :sudo, :systemctl, :enable, "puma_#{fetch(:application)}.service"
-        execute :sudo, :systemctl, :daemon-reload
-        execute :sudo, :systemctl, :start, "puma_#{fetch(:application)}.service"
+        # Enable and restart the service
+        execute :sudo, :systemctl, :enable, 'puma.service'
+        execute :sudo, :systemctl, :daemon - reload
+        execute :sudo, :systemctl, :restart, 'puma.service' # Changed from :start to :restart
       end
     end
   end
 end
-
 # Restart Puma using systemd
 after 'deploy:publishing', 'puma:systemd'
 # Default value for default_env is {}
